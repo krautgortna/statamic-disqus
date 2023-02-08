@@ -1,0 +1,25 @@
+{
+    "name": "krautgortna/disqus",
+    "description": "This Statamic Addon adds a Disqus comment section to your Statamic views",
+    "autoload": {
+        "psr-4": {
+            "Krautgortna\\Disqus\\": "src"
+        }
+    },
+    "authors": [
+        {
+            "name": "Manfred Milchrahm"
+        }
+    ],
+    "extra": {
+        "statamic": {
+            "name": "Disqus",
+            "description": "Disqus addon"
+        },
+        "laravel": {
+            "providers": [
+                "Krautgortna\\Disqus\\ServiceProvider"
+            ]
+        }
+    }
+}
