@@ -1,5 +1,5 @@
 {
-    "name": "krautgortna/disqus",
+    "name": "krautgortna/statamic-disqus",
     "description": "This Statamic Addon adds a Disqus comment section to your Statamic views",
     "autoload": {
         "psr-4": {
