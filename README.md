@@ -1,4 +1,6 @@
-# Disqus
+![Statamic 3](https://img.shields.io/badge/Statamic-3.x-blueviolet)
+[![Software License](https://img.shields.io/github/license/krautgortna/statamic-disqus)](LICENSE.md)
+![Downloads](https://img.shields.io/packagist/dt/krautgortna/statamic-disqus)
 
 ## Features
 
