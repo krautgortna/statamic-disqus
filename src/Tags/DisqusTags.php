@@ -13,7 +13,7 @@ class DisqusTags extends Tags
     /**
      * The {{ disqus:comments id="uniqueid" }} tag
      *
-     * @return string|array
+     * @return string
      */
     public function comments() 
     {
@@ -22,6 +22,7 @@ class DisqusTags extends Tags
 
         $this->shortname = env('DISQUS_SHORTNAME');
 
+        if(empty($this->shortname)) return '';
 
 
         $code = '
@@ -44,4 +45,66 @@ class DisqusTags extends Tags
 
         return $code;
     }
+
+    private function callDisqusApi($url){
+        if(empty(env('DISQUS_SECRET'))) {
+            return null;
+        }
+
+        $url .= "&api_secret=" . env('DISQUS_SECRET');
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        return curl_exec($ch);
+    }
+
+    private function getThreadDetails($id){
+        $this->shortname = env('DISQUS_SHORTNAME');
+
+        $apiUrl = "https://disqus.com/api/3.0/threads/details.json?thread:ident=" . $id . "&forum=" . $this->shortname;
+        $response = $this->callDisqusApi($apiUrl);
+        return json_decode($response, true);
+    }
+    
+    /**
+     * The {{ disqus:count id="uniqueid" }} tag
+     *
+     * @return string
+     */
+    public function count() 
+    {
+        $id = $this->params->get('id');
+
+        $json = $this->getThreadDetails($id);
+        $code = $json["code"];        
+
+        if($code == 0 && is_array($json["response"])) {
+            return $json["response"]["posts"];
+        }
+
+        return 0;
+    }
+
+    /**
+     * The {{ disqus:likes id="uniqueid" }} tag
+     *
+     * @return string
+     */
+    public function likes() 
+    {
+        $id = $this->params->get('id');
+
+        $json = $this->getThreadDetails($id);
+        $code = $json["code"];        
+
+        if($code == 0 && is_array($json["response"])) {
+            return $json["response"]["likes"];
+        }
+
+        return 0;
+    }
+    
+
 }
