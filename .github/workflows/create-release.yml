@@ -23,7 +23,7 @@ jobs:
         run: mkdir -p dist
 
       - name: Create zip
-        run: tar -czvf dist/${{ github.ref }}.tar.gz src
+        run: tar -czvf dist/${{ env.RELEASE_VERSION }}.tar.gz src
 
       - name: Create release
         id: create_release
@@ -40,6 +40,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/${{ github.ref }}.tar.gz
-          asset_name: ${{ github.ref }}.tar.gz
+          asset_path: ./dist/${{ env.RELEASE_VERSION }}.tar.gz
+          asset_name: ${{ env.RELEASE_VERSION }}.tar.gz
           asset_content_type: application/tar+gz
