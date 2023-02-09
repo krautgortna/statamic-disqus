@@ -1,6 +1,20 @@
 {
     "name": "krautgortna/statamic-disqus",
     "description": "This Statamic Addon adds a Disqus comment section to your Statamic views",
+    "type": "addon",
+    "license": "MIT",
+    "require": {
+      "php": ">= 7.0",
+      "statamic/cms": "^3.0",
+      "cakephp/utility": "^3.4",
+      "squizlabs/php_codesniffer": "*"
+    },
+    "keywords": [
+        "statamic",
+        "disqus",
+        "comments",
+        "forum"
+    ],
     "autoload": {
         "psr-4": {
             "Krautgortna\\Disqus\\": "src"
