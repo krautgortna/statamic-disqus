@@ -14,16 +14,11 @@ jobs:
         
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-      - name: Test
+        
+      - name: Print env
         run: |
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
-        
-      - name: Create dist directory
-        run: mkdir -p dist
-
-      - name: Create zip
-        run: tar -czvf dist/${{ env.RELEASE_VERSION }}.tar.gz src
 
       - name: Create release
         id: create_release
@@ -33,13 +28,3 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
-
-      - name: Upload zip to release
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/${{ env.RELEASE_VERSION }}.tar.gz
-          asset_name: ${{ env.RELEASE_VERSION }}.tar.gz
-          asset_content_type: application/tar+gz
