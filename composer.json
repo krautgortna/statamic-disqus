@@ -6,8 +6,6 @@
     "require": {
       "php": ">= 7.0",
       "statamic/cms": "^3.0",
-      "cakephp/utility": "^3.4",
-      "squizlabs/php_codesniffer": "*"
     },
     "keywords": [
         "statamic",
