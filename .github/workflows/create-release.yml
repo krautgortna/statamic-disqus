@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -33,7 +33,6 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
 
       - name: Upload zip to release
         uses: actions/upload-release-asset@v1.0.1
@@ -44,4 +43,3 @@ jobs:
           asset_path: ./dist/${{ env.RELEASE_VERSION }}.tar.gz
           asset_name: ${{ env.RELEASE_VERSION }}.tar.gz
           asset_content_type: application/tar+gz
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
