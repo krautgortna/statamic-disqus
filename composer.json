@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
       "php": ">= 7.0",
-      "statamic/cms": "^3.0",
+      "statamic/cms": "^3.0"
     },
     "keywords": [
         "statamic",
