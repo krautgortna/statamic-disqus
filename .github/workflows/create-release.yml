@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v1
+        
+      - name: Create dist directory
+        run: mkdir -p dist
 
       - name: Create zip
         run: tar -czvf dist/${{ github.ref }}.tar.gz src
