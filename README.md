@@ -5,8 +5,15 @@
 
 ## Features
 
--   Provides an Antlers tag that can be used in any frontend view
+-   Provides Antlers tags that can be used in any frontend view
 -   Easily provide a discussion thread id as a parameter
+-   For API calls: decide if you want to make a server- or client-side API call
+
+## Tags
+
+- `{{ disqus:comments id="id" }}` to load the Disqus embed plugin for a given thread
+- `{{ disqus:count id="id" }}` to show the number of comments ("posts") of a given thread
+- `{{ disqus:likes id="id" }}` to show the number of likes of a given thread
 
 ## How to Use
 
@@ -21,11 +28,18 @@ In the Antlers template, you can now use
 {{ disqus:comments id="id" }}
 ```
 
-If you want to provide the thread id dynamically, e.g. when the slug is the disqus thread id:
+Provide a variable as the thread id, e.g. when the slug is the Disqus thread id:
 
 ```bash
 {{ disqus:comments :id="slug" }}
 ```
+
+## All .env Parameters
+
+- `DISQUS_SHORTNAME="your_shortname"` to identify your account
+- `DISQUS_SECRET` used for server-side API calls
+- `DISQUS_API_KEY` used for client-side API calls
+- `DISQUS_METHOD` choose between 'server' or 'client' API calls (note that the Disqus embed is always loaded on client side)
 
 ## How to Install
 
