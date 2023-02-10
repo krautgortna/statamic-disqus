@@ -10,6 +10,10 @@ class ServiceProvider extends AddonServiceProvider
         Tags\DisqusTags::class,
     ];
 
+    protected $scripts = [
+        __DIR__.'/../resources/js/disqus.js'
+    ];
+
     public function bootAddon()
     {
     }

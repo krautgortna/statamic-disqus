@@ -4,11 +4,28 @@ namespace Krautgortna\Disqus\Tags;
 
 use Statamic\Tags\Tags;
 
+abstract class Metric {
+    const LIKES = 1;
+    const POSTS = 2;
+};
+
 class DisqusTags extends Tags
 {
-    private string $shortname;
     protected static $handle = 'disqus';
 
+    private $options = [
+        Metric::POSTS => ["prefix" => "disqus_like_count", "function" => "getCounts", "attr" => "posts"], 
+        Metric::LIKES => ["prefix" => "disqus_comment_count", "function" => "getLikes", "attr" => "likes"]
+    ];
+
+    private $shortname, $api_key, $api_secret, $api_method;
+
+    function __construct() {
+        $this->shortname = env('DISQUS_SHORTNAME');
+        $this->api_key = env('DISQUS_API_KEY');
+        $this->api_secret = env('DISQUS_SECRET');
+        $this->api_method = env('DISQUS_METHOD');
+    }
 
     /**
      * The {{ disqus:comments id="uniqueid" }} tag
@@ -20,10 +37,7 @@ class DisqusTags extends Tags
         $id = $this->params->get('id');
         $url = $this->context->get('permalink');
 
-        $this->shortname = env('DISQUS_SHORTNAME');
-
         if(empty($this->shortname)) return '';
-
 
         $code = '
             <div id="disqus_thread"></div>
@@ -47,11 +61,9 @@ class DisqusTags extends Tags
     }
 
     private function callDisqusApi($url){
-        if(empty(env('DISQUS_SECRET'))) {
-            return null;
-        }
+        if(empty($this->api_secret)) return null;
 
-        $url .= "&api_secret=" . env('DISQUS_SECRET');
+        $url .= "&api_secret=" . $this->api_secret;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -61,11 +73,54 @@ class DisqusTags extends Tags
     }
 
     private function getThreadDetails($id){
-        $this->shortname = env('DISQUS_SHORTNAME');
-
         $apiUrl = "https://disqus.com/api/3.0/threads/details.json?thread:ident=" . $id . "&forum=" . $this->shortname;
         $response = $this->callDisqusApi($apiUrl);
+        if( ! $response) null;
+
         return json_decode($response, true);
+    }
+
+    private function getPHPMetric($id, $metric){
+        $json = $this->getThreadDetails($id);
+        if ( ! $json ) return 0;
+
+        $code = $json["code"]; 
+        $option = $this->options[$metric]["attr"];
+
+        if($code == 0 && is_array($json["response"])) {
+            return $json["response"][$option];
+        }
+
+        return 0;
+    }
+
+    private function insertJSGetMetric($id, $metric){
+        if(empty($this->shortname) || empty($this->api_key)) return '';
+
+        $prefix = $this->options[$metric]["prefix"];
+        $jsFunction = $this->options[$metric]["function"];
+
+        $span = "<span id=\"${prefix}_${id}\">0</span>";
+        $script = '<script src="/vendor/statamic-disqus/js/disqus.js"></script>';
+        $script .= "<script>
+                        DISQUS_ADDON.init({'api_key': '$this->api_key'})
+                        DISQUS_ADDON.${jsFunction}(document.getElementById('${prefix}_${id}'), '$id', '$this->shortname')
+                    </script>";
+
+        return $span . $script;
+    }
+
+    // inserts the JS API call if 'client' or inits cUrl PHP call if 'server'
+    private function getMetric($id, $metric) {
+        switch($this->api_method){
+            case "client":  return $this->insertJSGetMetric($id, $metric);
+                            break;
+            case "server":  return $this->getPHPMetric($id, $metric);
+                            break;
+
+            default: return '';
+        }
+ 
     }
     
     /**
@@ -76,15 +131,7 @@ class DisqusTags extends Tags
     public function count() 
     {
         $id = $this->params->get('id');
-
-        $json = $this->getThreadDetails($id);
-        $code = $json["code"];        
-
-        if($code == 0 && is_array($json["response"])) {
-            return $json["response"]["posts"];
-        }
-
-        return 0;
+        return $this->getMetric($id, Metric::POSTS);
     }
 
     /**
@@ -95,16 +142,7 @@ class DisqusTags extends Tags
     public function likes() 
     {
         $id = $this->params->get('id');
-
-        $json = $this->getThreadDetails($id);
-        $code = $json["code"];        
-
-        if($code == 0 && is_array($json["response"])) {
-            return $json["response"]["likes"];
-        }
-
-        return 0;
-    }
-    
+        return $this->getMetric($id, Metric::LIKES);
+    }  
 
 }
