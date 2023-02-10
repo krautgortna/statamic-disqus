@@ -24,7 +24,7 @@ class DisqusTags extends Tags
         $this->shortname = env('DISQUS_SHORTNAME');
         $this->api_key = env('DISQUS_API_KEY');
         $this->api_secret = env('DISQUS_SECRET');
-        $this->api_method = env('DISQUS_METHOD');
+        $this->api_method = env('DISQUS_METHOD', 'client');
     }
 
     /**
